@@ -38,24 +38,40 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
-  <content>This is an application that will take images from attachment and make a gallery out of them.
+  <content>This is an application that will take images from attachment and make a gallery out of them. some word.
 {{velocity}}
-{{html clean="false"}}&lt;link href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.12/css/lightgallery.min.css" rel="stylesheet" type="text/css" /&gt;
-&lt;div id="lightgallery"&gt;
+== Attachments ==
+{{html clean="false"}}
+<div id="lightgallery">
 #foreach ($attachment in $doc.getAttachmentList())
-  &lt;a class="image" style="width:200px" href="$doc.getAttachmentURL($attachment.getFilename())"&gt;
-    &lt;img src="$doc.getAttachmentURL($attachment.getFilename())" /&gt;
-  &lt;/a&gt;
+  <a target="_blank" class="image" title="$attachment.getFilename()" style="width:200px" href="$doc.getAttachmentURL($attachment.getFilename())">
+    <img src="$doc.getAttachmentURL($attachment.getFilename())" />
+  </a>
 #end
-&lt;/div&gt;
-&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.12/js/lightgallery.min.js" type="text/javascript"&gt;&lt;/script&gt;
-&lt;script type="text/javascript"&gt;
-  document.getElementsByClassName('image')[0].onclick = function(e){
-  e.preventDefault();
-    console.log('Image clicked');
+</div>
+<script type="text/javascript">
+
+  for(var i=0; i<document.getElementsByClassName('image').length; i++){
+    document.getElementsByClassName('image')[i].onclick = function(e){
+      e.preventDefault();
+      if(document.getElementsByClassName('imageOpen').length == 0){
+        var galleryBox = viewImage(this.getAttribute('href'));
+        galleryBox.onclick = function(){
+          this.parentNode.removeChild(this);
+        }
+      }
+    }
   }
-  lightGallery(document.getElementById('lightgallery'));
-&lt;/script&gt;
+
+  function viewImage(imagePath){
+    var galleryDiv = document.createElement('img');
+    galleryDiv.setAttribute('src', imagePath);
+    galleryDiv.classList.add('imageOpen');
+    document.body.appendChild(galleryDiv);
+    return galleryDiv;
+  }
+
+</script>
 {{/html}}
 {{/velocity}}</content>
   <attachment>
@@ -297,10 +313,20 @@
     </property>
     <property>
       <code>.image{
-display: inline-block;
+  display: inline-block;
 }
 .image:hover{
-cursor: pointer;
+  cursor: pointer;
+}
+.imageOpen{
+  border: 1px solid gray;
+  padding: 20px;
+  border-radius = 10px;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  background: black;
+  transform: translate(-50%, -50%);
 }</code>
     </property>
     <property>
